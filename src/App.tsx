@@ -299,8 +299,12 @@ export default function App() {
 
   const productRef = React.useRef<HTMLDivElement>(null);
 
-  const scrollToProducts = () => {
-    productRef.current?.scrollIntoView({ behavior: 'smooth' });
+  const handleSelectCategory = (cat: string | null) => {
+    setSelectedCategory(cat);
+    // Add a slight delay to ensure the state update renders before scrolling
+    setTimeout(() => {
+      productRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
   };
 
   const addToCart = (product: Product) => {
@@ -348,19 +352,19 @@ export default function App() {
     : products.filter(p => p.isBestseller);
 
   return (
-    <div className="min-h-screen bg-brand-cream">
+    <div className="min-h-screen bg-brand-cream selection:bg-brand-gold/30">
       <Navbar 
         cartCount={cartItems.reduce((s, i) => s + i.quantity, 0)} 
         onOpenCart={() => setIsCartOpen(true)} 
         activeCategory={selectedCategory}
-        onSelectCategory={setSelectedCategory}
+        onSelectCategory={handleSelectCategory}
       />
       
-      <main>
-        <Hero onAction={scrollToProducts} />
+      <main className="pt-20">
+        {!selectedCategory && <Hero onAction={() => handleSelectCategory('Skincare')} />}
         
-        {/* Category Grid */}
-        <section className="py-24 px-4 md:px-8 max-w-7xl mx-auto">
+        {/* Navigation Categories / Bento Grid */}
+        <section className={cn("py-20 px-4 md:px-8 max-w-7xl mx-auto transition-all duration-700", selectedCategory && "opacity-60 scale-95 origin-top")}>
           <SectionHeader title="Curated Collections" subtitle="Explore Our World" />
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {[
@@ -372,18 +376,18 @@ export default function App() {
               <motion.div
                 key={cat.id}
                 whileHover={{ y: -10 }}
-                onClick={() => { setSelectedCategory(cat.id); scrollToProducts(); }}
+                onClick={() => handleSelectCategory(cat.id)}
                 className={cn(
                   "relative h-96 group cursor-pointer overflow-hidden transition-all duration-500",
                   selectedCategory === cat.id ? "ring-2 ring-brand-gold ring-offset-4 ring-offset-brand-cream" : ""
                 )}
               >
-                <img src={cat.image} alt={cat.name} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" referrerPolicy="no-referrer" />
-                <div className="absolute inset-0 bg-brand-charcoal/10 border border-brand-charcoal/5" />
-                <div className="absolute bottom-6 left-6 text-white">
-                  <h3 className="text-2xl font-light mb-2">{cat.name}</h3>
-                  <div className="flex items-center gap-2 text-xs tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-opacity">
-                    Discover <ArrowRight size={12} />
+                <img src={cat.image} alt={cat.name} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-110" referrerPolicy="no-referrer" />
+                <div className="absolute inset-0 bg-brand-charcoal/20 group-hover:bg-brand-charcoal/10 transition-colors" />
+                <div className="absolute bottom-10 left-10 text-white translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                  <h3 className="text-3xl font-serif mb-2">{cat.name}</h3>
+                  <div className="flex items-center gap-2 text-xs tracking-[0.3em] uppercase opacity-0 group-hover:opacity-100 mt-2 transition-all">
+                    Discover Selection <ArrowRight size={12} />
                   </div>
                 </div>
               </motion.div>
@@ -392,33 +396,55 @@ export default function App() {
         </section>
 
         {/* Dynamic Product Grid */}
-        <section ref={productRef} className="py-24 bg-white scroll-mt-20">
-          <div className="max-w-7xl mx-auto px-4 md:px-8">
-            <div className="flex justify-between items-end mb-12">
-              <SectionHeader 
-                title={selectedCategory ? `${selectedCategory} Collection` : "Our Bestsellers"} 
-                subtitle={selectedCategory ? "The Selection" : "The Essentials"} 
-              />
+        <section ref={productRef} className="py-32 bg-white relative overflow-hidden">
+          {/* Subtle Decorative Elements */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-brand-gold/5 rounded-full blur-[120px] -mr-48 -mt-48" />
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-brand-charcoal/5 rounded-full blur-[120px] -ml-48 -mb-48" />
+
+          <div className="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-20 gap-8">
+              <div>
+                <span className="text-[10px] uppercase tracking-[0.5em] text-brand-gold font-bold mb-4 block">
+                  {selectedCategory ? `Filter: ${selectedCategory}` : "Curated Selections"}
+                </span>
+                <h2 className="text-5xl md:text-7xl font-serif font-light leading-tight">
+                  {selectedCategory ? <span>The <span className="italic">{selectedCategory}</span> Edit</span> : "Iconic Bestsellers"}
+                </h2>
+              </div>
+              
               {selectedCategory && (
-                <button 
+                <motion.button 
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
                   onClick={() => setSelectedCategory(null)}
-                  className="text-xs uppercase tracking-widest font-bold border-b border-brand-charcoal pb-1 mb-16 hover:text-brand-gold hover:border-brand-gold transition-colors"
+                  className="group flex items-center gap-4 text-xs uppercase tracking-widest font-bold bg-brand-cream px-8 py-4 border border-brand-charcoal/10 hover:bg-brand-charcoal hover:text-white transition-all duration-500"
                 >
-                  Show All Bestsellers
-                </button>
+                  <X size={14} className="group-hover:rotate-90 transition-transform" />
+                  Clear Filters
+                </motion.button>
               )}
             </div>
+
             <AnimatePresence mode="wait">
               <motion.div 
                 key={selectedCategory || 'all'}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12"
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-16"
               >
-                {filteredProducts.map(product => (
-                  <ProductCard key={product.id} product={product} onAddToCart={addToCart} />
-                ))}
+                {filteredProducts.length > 0 ? (
+                  filteredProducts.map(product => (
+                    <ProductCard key={product.id} product={product} onAddToCart={addToCart} />
+                  ))
+                ) : (
+                  <div className="col-span-full py-40 text-center flex flex-col items-center gap-6">
+                    <div className="w-16 h-px bg-brand-charcoal/20" />
+                    <p className="font-serif italic text-2xl text-brand-charcoal/40">Our {selectedCategory} collection is coming soon.</p>
+                    <button onClick={() => setSelectedCategory(null)} className="text-xs uppercase tracking-widest underline decoration-brand-gold underline-offset-8">Explore Bestsellers</button>
+                  </div>
+                )}
               </motion.div>
             </AnimatePresence>
           </div>

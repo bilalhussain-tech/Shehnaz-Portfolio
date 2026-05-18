@@ -112,7 +112,47 @@ export const products: Product[] = [
     reviewsCount: 120,
     concern: ['Bold'],
     ingredients: ['Oud Wood', 'Amber', 'Patchouli'],
-    isNewArrival: true
+    isBestseller: true
+  },
+  {
+    id: '9',
+    name: 'Silk Radiance Foundation',
+    brand: 'Shehnaz Makeup',
+    category: 'Makeup',
+    price: 48,
+    image: 'https://images.unsplash.com/photo-1599733594230-6b823276abcc?q=80&w=600&auto=format&fit=crop',
+    description: 'A breathable foundation that blurs imperfections with a skin-like finish.',
+    rating: 4.9,
+    reviewsCount: 2100,
+    concern: ['Coverage', 'Glow'],
+    ingredients: ['Peptides', 'Glycerin', 'SPF 15'],
+    isBestseller: true
+  },
+  {
+    id: '10',
+    name: 'Rose Water Mist',
+    brand: 'Shehnaz Skincare',
+    category: 'Skincare',
+    price: 24,
+    image: 'https://images.unsplash.com/photo-1556229167-da31d4d85e74?q=80&w=600&auto=format&fit=crop',
+    description: 'Pure Bulgarian rose water to hydrate and refresh on the go.',
+    rating: 4.7,
+    reviewsCount: 890,
+    concern: ['Hydration', 'Redness'],
+    ingredients: ['Rosa Damascena Flower Water'],
+  },
+  {
+    id: '11',
+    name: 'Amber & Vanilla Elixir',
+    brand: 'Shehnaz Signature',
+    category: 'Fragrance',
+    price: 95,
+    image: 'https://images.unsplash.com/photo-1594035910387-fea47794261f?q=80&w=600&auto=format&fit=crop',
+    description: 'Warm, comforting, and sweet notes for a cozy aura.',
+    rating: 4.8,
+    reviewsCount: 450,
+    concern: ['Warm'],
+    ingredients: ['Vanilla Bean', 'Ambergris', 'Musk'],
   }
 ];
 
