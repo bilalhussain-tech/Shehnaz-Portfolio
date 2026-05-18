@@ -8,7 +8,17 @@ import ReactMarkdown from 'react-markdown';
 
 // --- Components ---
 
-const Navbar = ({ cartCount, onOpenCart }: { cartCount: number; onOpenCart: () => void }) => {
+const Navbar = ({ 
+  cartCount, 
+  onOpenCart, 
+  activeCategory, 
+  onSelectCategory 
+}: { 
+  cartCount: number; 
+  onOpenCart: () => void;
+  activeCategory: string | null;
+  onSelectCategory: (cat: string | null) => void;
+}) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -20,14 +30,29 @@ const Navbar = ({ cartCount, onOpenCart }: { cartCount: number; onOpenCart: () =
               {isOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
             <div className="hidden md:flex gap-8 text-[11px] uppercase tracking-[0.2em] font-medium">
-              <a href="#skincare" className="hover:text-brand-gold transition-colors">Skincare</a>
-              <a href="#makeup" className="hover:text-brand-gold transition-colors">Makeup</a>
-              <a href="#fragrance" className="hover:text-brand-gold transition-colors">Fragrance</a>
+              <button 
+                onClick={() => onSelectCategory('Skincare')} 
+                className={cn("hover:text-brand-gold transition-colors", activeCategory === 'Skincare' && "text-brand-gold")}
+              >
+                Skincare
+              </button>
+              <button 
+                onClick={() => onSelectCategory('Makeup')} 
+                className={cn("hover:text-brand-gold transition-colors", activeCategory === 'Makeup' && "text-brand-gold")}
+              >
+                Makeup
+              </button>
+              <button 
+                onClick={() => onSelectCategory('Fragrance')} 
+                className={cn("hover:text-brand-gold transition-colors", activeCategory === 'Fragrance' && "text-brand-gold")}
+              >
+                Fragrance
+              </button>
             </div>
           </div>
 
-          <div className="absolute left-1/2 -translate-x-1/2">
-            <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-brand-charcoal">
+          <div className="absolute left-1/2 -translate-x-1/2 cursor-pointer" onClick={() => onSelectCategory(null)}>
+            <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-brand-charcoal hover:scale-105 transition-transform">
               SHEHNAZ
             </h1>
           </div>
@@ -57,10 +82,10 @@ const Navbar = ({ cartCount, onOpenCart }: { cartCount: number; onOpenCart: () =
             exit={{ opacity: 0, y: -20 }}
             className="md:hidden bg-brand-cream border-b border-brand-charcoal/10 px-8 py-8 flex flex-col gap-6 uppercase tracking-widest text-sm"
           >
-            <a href="#skincare" onClick={() => setIsOpen(false)}>Skincare</a>
-            <a href="#makeup" onClick={() => setIsOpen(false)}>Makeup</a>
-            <a href="#fragrance" onClick={() => setIsOpen(false)}>Fragrance</a>
-            <a href="#concerns" onClick={() => setIsOpen(false)}>Shop by Concern</a>
+            <button className="text-left" onClick={() => { onSelectCategory('Skincare'); setIsOpen(false); }}>Skincare</button>
+            <button className="text-left" onClick={() => { onSelectCategory('Makeup'); setIsOpen(false); }}>Makeup</button>
+            <button className="text-left" onClick={() => { onSelectCategory('Fragrance'); setIsOpen(false); }}>Fragrance</button>
+            <button className="text-left" onClick={() => { onSelectCategory(null); setIsOpen(false); }}>Discover All</button>
           </motion.div>
         )}
       </AnimatePresence>
@@ -68,8 +93,8 @@ const Navbar = ({ cartCount, onOpenCart }: { cartCount: number; onOpenCart: () =
   );
 };
 
-const Hero = () => (
-  <section className="relative h-screen flex items-center overflow-hidden">
+const Hero = ({ onAction }: { onAction: () => void }) => (
+  <section className="relative h-[80vh] md:h-screen flex items-center overflow-hidden">
     <div className="absolute inset-0 z-0">
       <img
         src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=2000&auto=format&fit=crop"
@@ -95,7 +120,10 @@ const Hero = () => (
           Experience the pinnacle of luxury skincare. Formulated with rare botanical extracts and advanced molecular science.
         </p>
         <div className="flex gap-4">
-          <button className="bg-white text-brand-charcoal px-8 py-4 uppercase tracking-widest text-xs font-bold hover:bg-brand-gold hover:text-white transition-all">
+          <button 
+            onClick={onAction}
+            className="bg-white text-brand-charcoal px-8 py-4 uppercase tracking-widest text-xs font-bold hover:bg-brand-gold hover:text-white transition-all shadow-xl"
+          >
             Shop The Collection
           </button>
         </div>
@@ -103,6 +131,7 @@ const Hero = () => (
     </div>
   </section>
 );
+
 
 const ProductCard = ({ product, onAddToCart }: { product: Product; onAddToCart: (p: Product) => void }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -266,6 +295,13 @@ export default function App() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [analysis, setAnalysis] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  const productRef = React.useRef<HTMLDivElement>(null);
+
+  const scrollToProducts = () => {
+    productRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   const addToCart = (product: Product) => {
     setCartItems(prev => {
@@ -307,27 +343,40 @@ export default function App() {
     }
   };
 
+  const filteredProducts = selectedCategory 
+    ? products.filter(p => p.category === selectedCategory) 
+    : products.filter(p => p.isBestseller);
+
   return (
     <div className="min-h-screen bg-brand-cream">
-      <Navbar cartCount={cartItems.reduce((s, i) => s + i.quantity, 0)} onOpenCart={() => setIsCartOpen(true)} />
+      <Navbar 
+        cartCount={cartItems.reduce((s, i) => s + i.quantity, 0)} 
+        onOpenCart={() => setIsCartOpen(true)} 
+        activeCategory={selectedCategory}
+        onSelectCategory={setSelectedCategory}
+      />
       
       <main>
-        <Hero />
+        <Hero onAction={scrollToProducts} />
         
         {/* Category Grid */}
         <section className="py-24 px-4 md:px-8 max-w-7xl mx-auto">
           <SectionHeader title="Curated Collections" subtitle="Explore Our World" />
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {[
-              { name: 'Skincare', image: 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?q=80&w=800&auto=format&fit=crop', id: 'skincare' },
-              { name: 'Makeup', image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=800&auto=format&fit=crop', id: 'makeup' },
-              { name: 'Haircare', image: 'https://images.unsplash.com/photo-1527799822367-a2886701f662?q=80&w=800&auto=format&fit=crop', id: 'haircare' },
-              { name: 'Fragrance', image: 'https://images.unsplash.com/photo-1541643600914-78b084683601?q=80&w=800&auto=format&fit=crop', id: 'fragrance' },
-            ].map((cat, i) => (
+              { name: 'Skincare', image: 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?q=80&w=800&auto=format&fit=crop', id: 'Skincare' },
+              { name: 'Makeup', image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=800&auto=format&fit=crop', id: 'Makeup' },
+              { name: 'Haircare', image: 'https://images.unsplash.com/photo-1527799822367-a2886701f662?q=80&w=800&auto=format&fit=crop', id: 'Haircare' },
+              { name: 'Fragrance', image: 'https://images.unsplash.com/photo-1541643600914-78b084683601?q=80&w=800&auto=format&fit=crop', id: 'Fragrance' },
+            ].map((cat) => (
               <motion.div
                 key={cat.id}
                 whileHover={{ y: -10 }}
-                className="relative h-96 group cursor-pointer overflow-hidden"
+                onClick={() => { setSelectedCategory(cat.id); scrollToProducts(); }}
+                className={cn(
+                  "relative h-96 group cursor-pointer overflow-hidden transition-all duration-500",
+                  selectedCategory === cat.id ? "ring-2 ring-brand-gold ring-offset-4 ring-offset-brand-cream" : ""
+                )}
               >
                 <img src={cat.image} alt={cat.name} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" referrerPolicy="no-referrer" />
                 <div className="absolute inset-0 bg-brand-charcoal/10 border border-brand-charcoal/5" />
@@ -342,20 +391,36 @@ export default function App() {
           </div>
         </section>
 
-        {/* Bestsellers */}
-        <section className="py-24 bg-white">
+        {/* Dynamic Product Grid */}
+        <section ref={productRef} className="py-24 bg-white scroll-mt-20">
           <div className="max-w-7xl mx-auto px-4 md:px-8">
             <div className="flex justify-between items-end mb-12">
-              <SectionHeader title="Iconic Bestsellers" subtitle="The Essentials" />
-              <button className="text-xs uppercase tracking-widest font-bold border-b border-brand-charcoal pb-1 mb-16 hidden md:block hover:text-brand-gold hover:border-brand-gold transition-colors">
-                View All
-              </button>
+              <SectionHeader 
+                title={selectedCategory ? `${selectedCategory} Collection` : "Our Bestsellers"} 
+                subtitle={selectedCategory ? "The Selection" : "The Essentials"} 
+              />
+              {selectedCategory && (
+                <button 
+                  onClick={() => setSelectedCategory(null)}
+                  className="text-xs uppercase tracking-widest font-bold border-b border-brand-charcoal pb-1 mb-16 hover:text-brand-gold hover:border-brand-gold transition-colors"
+                >
+                  Show All Bestsellers
+                </button>
+              )}
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
-              {products.filter(p => p.isBestseller).map(product => (
-                <ProductCard key={product.id} product={product} onAddToCart={addToCart} />
-              ))}
-            </div>
+            <AnimatePresence mode="wait">
+              <motion.div 
+                key={selectedCategory || 'all'}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12"
+              >
+                {filteredProducts.map(product => (
+                  <ProductCard key={product.id} product={product} onAddToCart={addToCart} />
+                ))}
+              </motion.div>
+            </AnimatePresence>
           </div>
         </section>
 
