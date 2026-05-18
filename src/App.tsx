@@ -104,7 +104,7 @@ const Hero = ({ onAction }: { onAction: () => void }) => (
   <section className="relative h-[80vh] md:h-screen flex items-center overflow-hidden">
     <div className="absolute inset-0 z-0">
       <img
-        src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=2000&auto=format&fit=crop"
+        src="https://images.unsplash.com/photo-1617897903246-719242758050?q=80&w=2000&auto=format&fit=crop"
         alt="Beauty Hero"
         className="w-full h-full object-cover"
         referrerPolicy="no-referrer"
