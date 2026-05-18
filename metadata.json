@@ -1,0 +1,6 @@
+{
+  "name": "Shehnaz Super Store",
+  "description": "A luxury beauty e-commerce experience featuring high-quality skincare, makeup, haircare, and fragrances with a focus on ingredient transparency and expert beauty advice.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
