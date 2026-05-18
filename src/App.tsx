@@ -43,6 +43,12 @@ const Navbar = ({
                 Makeup
               </button>
               <button 
+                onClick={() => onSelectCategory('Haircare')} 
+                className={cn("hover:text-brand-gold transition-colors", activeCategory === 'Haircare' && "text-brand-gold")}
+              >
+                Haircare
+              </button>
+              <button 
                 onClick={() => onSelectCategory('Fragrance')} 
                 className={cn("hover:text-brand-gold transition-colors", activeCategory === 'Fragrance' && "text-brand-gold")}
               >
@@ -84,6 +90,7 @@ const Navbar = ({
           >
             <button className="text-left" onClick={() => { onSelectCategory('Skincare'); setIsOpen(false); }}>Skincare</button>
             <button className="text-left" onClick={() => { onSelectCategory('Makeup'); setIsOpen(false); }}>Makeup</button>
+            <button className="text-left" onClick={() => { onSelectCategory('Haircare'); setIsOpen(false); }}>Haircare</button>
             <button className="text-left" onClick={() => { onSelectCategory('Fragrance'); setIsOpen(false); }}>Fragrance</button>
             <button className="text-left" onClick={() => { onSelectCategory(null); setIsOpen(false); }}>Discover All</button>
           </motion.div>
@@ -102,7 +109,7 @@ const Hero = ({ onAction }: { onAction: () => void }) => (
         className="w-full h-full object-cover"
         referrerPolicy="no-referrer"
       />
-      <div className="absolute inset-0 bg-brand-charcoal/20" />
+      <div className="absolute inset-0 bg-brand-charcoal/40" />
     </div>
     
     <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-8 w-full">
@@ -112,12 +119,15 @@ const Hero = ({ onAction }: { onAction: () => void }) => (
         transition={{ duration: 0.8 }}
         className="max-w-2xl text-white"
       >
-        <span className="uppercase tracking-[0.4em] text-xs font-semibold mb-4 block">New Collective 2024</span>
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-8 h-px bg-brand-gold" />
+          <span className="uppercase tracking-[0.4em] text-[10px] font-bold text-brand-gold">Superior Beauty Standards</span>
+        </div>
         <h2 className="text-6xl md:text-8xl font-light leading-[0.9] mb-8">
-          Eternal <br /> <span className="italic font-serif">Luminescence</span>
+          Prestige <br /> <span className="italic font-serif">Essentials</span>
         </h2>
-        <p className="text-lg md:text-xl font-light mb-10 text-white/80 max-w-lg">
-          Experience the pinnacle of luxury skincare. Formulated with rare botanical extracts and advanced molecular science.
+        <p className="text-lg md:text-xl font-light mb-10 text-white/90 max-w-lg leading-relaxed">
+          The most coveted brands. The most effective formulas. Curated for the discerning beauty ritual in Pakistan.
         </p>
         <div className="flex gap-4">
           <button 
@@ -356,7 +366,7 @@ export default function App() {
     setActiveInfoPage(null);
     // Add a slight delay to ensure the state update renders before scrolling
     setTimeout(() => {
-      productRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      productRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
     }, 100);
   };
 
@@ -435,10 +445,10 @@ export default function App() {
                 <SectionHeader title="Curated Collections" subtitle="Explore Our World" />
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   {[
-                    { name: 'Skincare', image: 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?q=80&w=800&auto=format&fit=crop', id: 'Skincare' },
-                    { name: 'Makeup', image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=800&auto=format&fit=crop', id: 'Makeup' },
-                    { name: 'Haircare', image: 'https://images.unsplash.com/photo-1527799822367-a2886701f662?q=80&w=800&auto=format&fit=crop', id: 'Haircare' },
-                    { name: 'Fragrance', image: 'https://images.unsplash.com/photo-1541643600914-78b084683601?q=80&w=800&auto=format&fit=crop', id: 'Fragrance' },
+                    { name: 'Skincare', image: 'https://images.unsplash.com/photo-1612817288484-6f916006741a?q=80&w=800&auto=format&fit=crop', id: 'Skincare' },
+                    { name: 'Makeup', image: 'https://images.unsplash.com/photo-1512496015851-a90fb38ba796?q=80&w=800&auto=format&fit=crop', id: 'Makeup' },
+                    { name: 'Haircare', image: 'https://images.unsplash.com/photo-1522337360710-c038469c6a7d?q=80&w=800&auto=format&fit=crop', id: 'Haircare' },
+                    { name: 'Fragrance', image: 'https://images.unsplash.com/photo-1594035910387-fea47794261f?q=80&w=800&auto=format&fit=crop', id: 'Fragrance' },
                   ].map((cat) => (
                     <motion.div
                       key={cat.id}
@@ -471,9 +481,12 @@ export default function App() {
                 <div className="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
                   <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-20 gap-8">
                     <div>
-                      <span className="text-[10px] uppercase tracking-[0.5em] text-brand-gold font-bold mb-4 block">
-                        {selectedCategory ? `Filter: ${selectedCategory}` : "Curated Selections"}
-                      </span>
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="w-12 h-px bg-brand-gold" />
+                        <span className="text-[10px] uppercase tracking-[0.5em] text-brand-gold font-bold">
+                          {selectedCategory ? `Filter: ${selectedCategory}` : "Curated Selections"}
+                        </span>
+                      </div>
                       <h2 className="text-5xl md:text-7xl font-serif font-light leading-tight">
                         {selectedCategory ? <span>The <span className="italic">{selectedCategory}</span> Edit</span> : "Iconic Bestsellers"}
                       </h2>
