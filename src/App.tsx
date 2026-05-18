@@ -289,6 +289,57 @@ const SectionHeader = ({ title, subtitle }: { title: string; subtitle: string })
 
 // --- App ---
 
+const InfoPage = ({ title, content, onBack }: { title: string; content: string; onBack: () => void }) => (
+  <motion.div 
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    className="py-32 px-4 md:px-8 max-w-4xl mx-auto min-h-[60vh]"
+  >
+    <button onClick={onBack} className="text-[10px] uppercase tracking-widest font-bold flex items-center gap-2 mb-12 hover:text-brand-gold transition-colors">
+      <ArrowRight size={14} className="rotate-180" /> Back to Store
+    </button>
+    <h2 className="text-5xl md:text-7xl font-serif mb-12">{title}</h2>
+    <div className="prose prose-sm md:prose-base prose-brand max-w-none font-light text-brand-charcoal/80 leading-relaxed space-y-6">
+      <ReactMarkdown>{content}</ReactMarkdown>
+    </div>
+  </motion.div>
+);
+
+const FOOTER_CONTENT: Record<string, { title: string, content: string }> = {
+  'Track Order': {
+    title: 'Track Your Ritual',
+    content: 'To track your Shehnaz shipment, please enter your order number and email address below. \n\n*Note: Tracking information may take up to 24 hours to update after dispatch.*'
+  },
+  'Shipping & Returns': {
+    title: 'Shipping & Returns',
+    content: 'We offer complimentary white-glove delivery on all orders over Rs. 25,000. \n\n**Standard Delivery:** 3-5 Business Days\n**Express Delivery:** 1-2 Business Days\n\n**Return Policy:** Unopened and unused items can be returned within 14 days of delivery for a full refund in original packaging.'
+  },
+  'Gift Services': {
+    title: 'Art of Gifting',
+    content: 'Every Shehnaz order arrives in our signature cream-and-gold gift box. We offer personalized calligraphy notes and curated gift sets for special occasions.'
+  },
+  'Contact Us': {
+    title: 'Concierge Services',
+    content: 'Our beauty specialists are available Monday to Saturday, 9:00 AM - 9:00 PM (PKT).\n\n**Email:** care@shehnazsuperstore.pk\n**Phone:** +92 (21) 123-4567\n**WhatsApp:** +92 300 1234567'
+  },
+  'Our Story': {
+    title: 'The Shehnaz Legacy',
+    content: 'Founded on the principle of scientific elegance, Shehnaz Super Store has been Pakistan\'s premier destination for luxury beauty for over a decade. We curate only the most effective formulas from the world\'s most prestigious beauty houses.'
+  },
+  'Beauty Blog': {
+    title: 'The Beauty Brief',
+    content: 'Explore our latest articles on skincare science, seasonal makeup trends, and fragrance layering techniques. From expert interviews to routine guides, we help you master your beauty ritual.'
+  },
+  'Stores': {
+    title: 'Our Boutiques',
+    content: '**Karachi:** Dolmen Mall Clifton, Second Floor\n**Lahore:** Emporium Mall, Ground Floor\n**Islamabad:** Centaurus Mall, First Floor'
+  },
+  'Privacy Policy': {
+    title: 'Privacy & Security',
+    content: 'At Shehnaz, your privacy is paramount. We use industry-standard encryption to protect your personal and payment information. We never share your data with third parties without your explicit consent.'
+  }
+};
+
 export default function App() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -296,11 +347,13 @@ export default function App() {
   const [analysis, setAnalysis] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [activeInfoPage, setActiveInfoPage] = useState<string | null>(null);
 
   const productRef = React.useRef<HTMLDivElement>(null);
 
   const handleSelectCategory = (cat: string | null) => {
     setSelectedCategory(cat);
+    setActiveInfoPage(null);
     // Add a slight delay to ensure the state update renders before scrolling
     setTimeout(() => {
       productRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -359,191 +412,208 @@ export default function App() {
         activeCategory={selectedCategory}
         onSelectCategory={handleSelectCategory}
       />
-      
-      <main className="pt-20">
-        {!selectedCategory && <Hero onAction={() => handleSelectCategory('Skincare')} />}
-        
-        {/* Navigation Categories / Bento Grid */}
-        <section className={cn("py-20 px-4 md:px-8 max-w-7xl mx-auto transition-all duration-700", selectedCategory && "opacity-60 scale-95 origin-top")}>
-          <SectionHeader title="Curated Collections" subtitle="Explore Our World" />
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {[
-              { name: 'Skincare', image: 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?q=80&w=800&auto=format&fit=crop', id: 'Skincare' },
-              { name: 'Makeup', image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=800&auto=format&fit=crop', id: 'Makeup' },
-              { name: 'Haircare', image: 'https://images.unsplash.com/photo-1527799822367-a2886701f662?q=80&w=800&auto=format&fit=crop', id: 'Haircare' },
-              { name: 'Fragrance', image: 'https://images.unsplash.com/photo-1541643600914-78b084683601?q=80&w=800&auto=format&fit=crop', id: 'Fragrance' },
-            ].map((cat) => (
-              <motion.div
-                key={cat.id}
-                whileHover={{ y: -10 }}
-                onClick={() => handleSelectCategory(cat.id)}
-                className={cn(
-                  "relative h-96 group cursor-pointer overflow-hidden transition-all duration-500",
-                  selectedCategory === cat.id ? "ring-2 ring-brand-gold ring-offset-4 ring-offset-brand-cream" : ""
-                )}
-              >
-                <img src={cat.image} alt={cat.name} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-110" referrerPolicy="no-referrer" />
-                <div className="absolute inset-0 bg-brand-charcoal/20 group-hover:bg-brand-charcoal/10 transition-colors" />
-                <div className="absolute bottom-10 left-10 text-white translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                  <h3 className="text-3xl font-serif mb-2">{cat.name}</h3>
-                  <div className="flex items-center gap-2 text-xs tracking-[0.3em] uppercase opacity-0 group-hover:opacity-100 mt-2 transition-all">
-                    Discover Selection <ArrowRight size={12} />
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </section>
-
-        {/* Dynamic Product Grid */}
-        <section ref={productRef} className="py-32 bg-white relative overflow-hidden">
-          {/* Subtle Decorative Elements */}
-          <div className="absolute top-0 right-0 w-96 h-96 bg-brand-gold/5 rounded-full blur-[120px] -mr-48 -mt-48" />
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-brand-charcoal/5 rounded-full blur-[120px] -ml-48 -mb-48" />
-
-          <div className="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-20 gap-8">
-              <div>
-                <span className="text-[10px] uppercase tracking-[0.5em] text-brand-gold font-bold mb-4 block">
-                  {selectedCategory ? `Filter: ${selectedCategory}` : "Curated Selections"}
-                </span>
-                <h2 className="text-5xl md:text-7xl font-serif font-light leading-tight">
-                  {selectedCategory ? <span>The <span className="italic">{selectedCategory}</span> Edit</span> : "Iconic Bestsellers"}
-                </h2>
-              </div>
-              
-              {selectedCategory && (
-                <motion.button 
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  onClick={() => setSelectedCategory(null)}
-                  className="group flex items-center gap-4 text-xs uppercase tracking-widest font-bold bg-brand-cream px-8 py-4 border border-brand-charcoal/10 hover:bg-brand-charcoal hover:text-white transition-all duration-500"
-                >
-                  <X size={14} className="group-hover:rotate-90 transition-transform" />
-                  Clear Filters
-                </motion.button>
-              )}
-            </div>
-
-            <AnimatePresence mode="wait">
-              <motion.div 
-                key={selectedCategory || 'all'}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-16"
-              >
-                {filteredProducts.length > 0 ? (
-                  filteredProducts.map(product => (
-                    <ProductCard key={product.id} product={product} onAddToCart={addToCart} />
-                  ))
-                ) : (
-                  <div className="col-span-full py-40 text-center flex flex-col items-center gap-6">
-                    <div className="w-16 h-px bg-brand-charcoal/20" />
-                    <p className="font-serif italic text-2xl text-brand-charcoal/40">Our {selectedCategory} collection is coming soon.</p>
-                    <button onClick={() => setSelectedCategory(null)} className="text-xs uppercase tracking-widest underline decoration-brand-gold underline-offset-8">Explore Bestsellers</button>
-                  </div>
-                )}
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        </section>
-
-        {/* Shop by Concern / Values */}
-        <section className="py-24 px-4 md:px-8 bg-brand-charcoal text-brand-cream">
-          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-16 md:gap-24">
-            <div className="flex flex-col gap-6 text-center md:text-left">
-              <ShieldCheck size={32} className="mx-auto md:mx-0 text-brand-gold" />
-              <h3 className="text-2xl font-serif">100% Authentic</h3>
-              <p className="text-sm font-light text-brand-cream/60 leading-relaxed">
-                Direct partnerships with luxury beauty houses guarantee the provenance and purity of every product we carry.
-              </p>
-            </div>
-            <div className="flex flex-col gap-6 text-center md:text-left">
-              <Truck size={32} className="mx-auto md:mx-0 text-brand-gold" />
-              <h3 className="text-2xl font-serif">Concierge Delivery</h3>
-              <p className="text-sm font-light text-brand-cream/60 leading-relaxed">
-                Complimentary white-glove shipping on orders over $150. Wrapped in our signature sustainable packaging.
-              </p>
-            </div>
-            <div className="flex flex-col gap-6 text-center md:text-left">
-              <Zap size={32} className="mx-auto md:mx-0 text-brand-gold" />
-              <h3 className="text-2xl font-serif">Expert Guidance</h3>
-              <p className="text-sm font-light text-brand-cream/60 leading-relaxed">
-                Our AI-powered beauty advisor and on-call chemists are here to decode your skincare routine.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* Blog / Routine Tips */}
-        <section className="py-24 max-w-7xl mx-auto px-4 md:px-8">
-          <SectionHeader title="The Beauty Brief" subtitle="Routine & Rituals" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-            {blogPosts.map(post => (
-              <div key={post.id} className="group cursor-pointer">
-                <div className="aspect-[16/9] overflow-hidden mb-6">
-                  <img src={post.image} alt={post.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" referrerPolicy="no-referrer" />
-                </div>
-                <span className="text-[10px] uppercase tracking-widest text-brand-gold font-bold mb-2 block">{post.category}</span>
-                <h3 className="text-3xl font-light mb-4 group-hover:text-brand-gold transition-colors">{post.title}</h3>
-                <p className="text-sm font-light text-brand-charcoal/60 mb-6">{post.excerpt}</p>
-                <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold">
-                  Read Article <ArrowRight size={14} />
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Detailed Ingredient Transparency Feature */}
-        <section className="py-24 bg-brand-charcoal/5">
-          <div className="max-w-3xl mx-auto px-4 text-center">
-            <SectionHeader title="Ingredient IQ" subtitle="Full Transparency" />
-            <p className="text-lg font-light mb-12">
-              Curious about what goes into your skincare? Select a product to see a deep dive analysis of its active components.
-            </p>
-            <div className="flex flex-wrap justify-center gap-4 mb-12">
-              {products.map(p => (
-                <button
-                  key={p.id}
-                  onClick={() => {
-                    setSelectedProduct(p);
-                    analyzeIngredients(p);
-                  }}
-                  className={cn(
-                    "px-6 py-2 border border-brand-charcoal/20 text-xs uppercase tracking-widest transition-all",
-                    selectedProduct?.id === p.id ? "bg-brand-charcoal text-white" : "hover:border-brand-charcoal"
-                  )}
-                >
-                  {p.name}
-                </button>
-              ))}
-            </div>
-            
+         <main className="pt-20">
+        <AnimatePresence mode="wait">
+          {activeInfoPage ? (
+            <InfoPage 
+              key="info"
+              title={FOOTER_CONTENT[activeInfoPage].title}
+              content={FOOTER_CONTENT[activeInfoPage].content}
+              onBack={() => setActiveInfoPage(null)}
+            />
+          ) : (
             <motion.div
-              initial={false}
-              animate={{ height: selectedProduct ? 'auto' : 0, opacity: selectedProduct ? 1 : 0 }}
-              className="overflow-hidden"
+              key="home"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
             >
-              <div className="bg-white p-8 md:p-12 text-left border border-brand-charcoal/5 shadow-xl">
-                {isAnalyzing ? (
-                  <div className="flex flex-col items-center gap-4 py-8">
-                    <div className="w-12 h-12 border-2 border-brand-gold border-t-transparent rounded-full animate-spin" />
-                    <p className="text-sm italic animate-pulse">Our experts are analyzing the formula...</p>
+              {!selectedCategory && <Hero onAction={() => handleSelectCategory('Skincare')} />}
+              
+              {/* Navigation Categories / Bento Grid */}
+              <section className={cn("py-20 px-4 md:px-8 max-w-7xl mx-auto transition-all duration-700", selectedCategory && "opacity-60 scale-95 origin-top")}>
+                <SectionHeader title="Curated Collections" subtitle="Explore Our World" />
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  {[
+                    { name: 'Skincare', image: 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?q=80&w=800&auto=format&fit=crop', id: 'Skincare' },
+                    { name: 'Makeup', image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=800&auto=format&fit=crop', id: 'Makeup' },
+                    { name: 'Haircare', image: 'https://images.unsplash.com/photo-1527799822367-a2886701f662?q=80&w=800&auto=format&fit=crop', id: 'Haircare' },
+                    { name: 'Fragrance', image: 'https://images.unsplash.com/photo-1541643600914-78b084683601?q=80&w=800&auto=format&fit=crop', id: 'Fragrance' },
+                  ].map((cat) => (
+                    <motion.div
+                      key={cat.id}
+                      whileHover={{ y: -10 }}
+                      onClick={() => handleSelectCategory(cat.id)}
+                      className={cn(
+                        "relative h-96 group cursor-pointer overflow-hidden transition-all duration-500",
+                        selectedCategory === cat.id ? "ring-2 ring-brand-gold ring-offset-4 ring-offset-brand-cream" : ""
+                      )}
+                    >
+                      <img src={cat.image} alt={cat.name} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-110" referrerPolicy="no-referrer" />
+                      <div className="absolute inset-0 bg-brand-charcoal/20 group-hover:bg-brand-charcoal/10 transition-colors" />
+                      <div className="absolute bottom-10 left-10 text-white translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                        <h3 className="text-3xl font-serif mb-2">{cat.name}</h3>
+                        <div className="flex items-center gap-2 text-xs tracking-[0.3em] uppercase opacity-0 group-hover:opacity-100 mt-2 transition-all">
+                          Discover Selection <ArrowRight size={12} />
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </section>
+
+              {/* Dynamic Product Grid */}
+              <section ref={productRef} className="py-32 bg-white relative overflow-hidden">
+                {/* Subtle Decorative Elements */}
+                <div className="absolute top-0 right-0 w-96 h-96 bg-brand-gold/5 rounded-full blur-[120px] -mr-48 -mt-48" />
+                <div className="absolute bottom-0 left-0 w-96 h-96 bg-brand-charcoal/5 rounded-full blur-[120px] -ml-48 -mb-48" />
+
+                <div className="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
+                  <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-20 gap-8">
+                    <div>
+                      <span className="text-[10px] uppercase tracking-[0.5em] text-brand-gold font-bold mb-4 block">
+                        {selectedCategory ? `Filter: ${selectedCategory}` : "Curated Selections"}
+                      </span>
+                      <h2 className="text-5xl md:text-7xl font-serif font-light leading-tight">
+                        {selectedCategory ? <span>The <span className="italic">{selectedCategory}</span> Edit</span> : "Iconic Bestsellers"}
+                      </h2>
+                    </div>
+                    
+                    {selectedCategory && (
+                      <motion.button 
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        onClick={() => setSelectedCategory(null)}
+                        className="group flex items-center gap-4 text-xs uppercase tracking-widest font-bold bg-brand-cream px-8 py-4 border border-brand-charcoal/10 hover:bg-brand-charcoal hover:text-white transition-all duration-500"
+                      >
+                        <X size={14} className="group-hover:rotate-90 transition-transform" />
+                        Clear Filters
+                      </motion.button>
+                    )}
                   </div>
-                ) : (
-                  <div className="prose prose-brand max-w-none prose-sm">
-                    <ReactMarkdown>
-                      {analysis || "Select a product above to analyze its ingredients."}
-                    </ReactMarkdown>
+
+                  <AnimatePresence mode="wait">
+                    <motion.div 
+                      key={selectedCategory || 'all'}
+                      initial={{ opacity: 0, y: 30 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-16"
+                    >
+                      {filteredProducts.length > 0 ? (
+                        filteredProducts.map(product => (
+                          <ProductCard key={product.id} product={product} onAddToCart={addToCart} />
+                        ))
+                      ) : (
+                        <div className="col-span-full py-40 text-center flex flex-col items-center gap-6">
+                          <div className="w-16 h-px bg-brand-charcoal/20" />
+                          <p className="font-serif italic text-2xl text-brand-charcoal/40">Our {selectedCategory} collection is coming soon.</p>
+                          <button onClick={() => setSelectedCategory(null)} className="text-xs uppercase tracking-widest underline decoration-brand-gold underline-offset-8">Explore Bestsellers</button>
+                        </div>
+                      )}
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
+              </section>
+
+              {/* Shop by Concern / Values */}
+              <section className="py-24 px-4 md:px-8 bg-brand-charcoal text-brand-cream">
+                <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-16 md:gap-24">
+                  <div className="flex flex-col gap-6 text-center md:text-left">
+                    <ShieldCheck size={32} className="mx-auto md:mx-0 text-brand-gold" />
+                    <h3 className="text-2xl font-serif">100% Authentic</h3>
+                    <p className="text-sm font-light text-brand-cream/60 leading-relaxed">
+                      Direct partnerships with luxury beauty houses guarantee the provenance and purity of every product we carry.
+                    </p>
                   </div>
-                )}
-              </div>
+                  <div className="flex flex-col gap-6 text-center md:text-left">
+                    <Truck size={32} className="mx-auto md:mx-0 text-brand-gold" />
+                    <h3 className="text-2xl font-serif">Concierge Delivery</h3>
+                    <p className="text-sm font-light text-brand-cream/60 leading-relaxed">
+                      Complimentary white-glove shipping on orders over Rs. 25,000. Wrapped in our signature sustainable packaging.
+                    </p>
+                  </div>
+                  <div className="flex flex-col gap-6 text-center md:text-left">
+                    <Zap size={32} className="mx-auto md:mx-0 text-brand-gold" />
+                    <h3 className="text-2xl font-serif">Expert Guidance</h3>
+                    <p className="text-sm font-light text-brand-cream/60 leading-relaxed">
+                      Our AI-powered beauty advisor and on-call chemists are here to decode your skincare routine.
+                    </p>
+                  </div>
+                </div>
+              </section>
+
+              {/* Blog / Routine Tips */}
+              <section className="py-24 max-w-7xl mx-auto px-4 md:px-8">
+                <SectionHeader title="The Beauty Brief" subtitle="Routine & Rituals" />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                  {blogPosts.map(post => (
+                    <div key={post.id} className="group cursor-pointer" onClick={() => setActiveInfoPage('Beauty Blog')}>
+                      <div className="aspect-[16/9] overflow-hidden mb-6">
+                        <img src={post.image} alt={post.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" referrerPolicy="no-referrer" />
+                      </div>
+                      <span className="text-[10px] uppercase tracking-widest text-brand-gold font-bold mb-2 block">{post.category}</span>
+                      <h3 className="text-3xl font-light mb-4 group-hover:text-brand-gold transition-colors">{post.title}</h3>
+                      <p className="text-sm font-light text-brand-charcoal/60 mb-6">{post.excerpt}</p>
+                      <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold">
+                        Read Article <ArrowRight size={14} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+
+              {/* Detailed Ingredient Transparency Feature */}
+              <section className="py-24 bg-brand-charcoal/5">
+                <div className="max-w-3xl mx-auto px-4 text-center">
+                  <SectionHeader title="Ingredient IQ" subtitle="Full Transparency" />
+                  <p className="text-lg font-light mb-12">
+                    Curious about what goes into your skincare? Select a product to see a deep dive analysis of its active components.
+                  </p>
+                  <div className="flex flex-wrap justify-center gap-4 mb-12">
+                    {products.map(p => (
+                      <button
+                        key={p.id}
+                        onClick={() => {
+                          setSelectedProduct(p);
+                          analyzeIngredients(p);
+                        }}
+                        className={cn(
+                          "px-6 py-2 border border-brand-charcoal/20 text-xs uppercase tracking-widest transition-all",
+                          selectedProduct?.id === p.id ? "bg-brand-charcoal text-white" : "hover:border-brand-charcoal"
+                        )}
+                      >
+                        {p.name}
+                      </button>
+                    ))}
+                  </div>
+                  
+                  <motion.div
+                    initial={false}
+                    animate={{ height: selectedProduct ? 'auto' : 0, opacity: selectedProduct ? 1 : 0 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="bg-white p-8 md:p-12 text-left border border-brand-charcoal/5 shadow-xl">
+                      {isAnalyzing ? (
+                        <div className="flex flex-col items-center gap-4 py-8">
+                          <div className="w-12 h-12 border-2 border-brand-gold border-t-transparent rounded-full animate-spin" />
+                          <p className="text-sm italic animate-pulse">Our experts are analyzing the formula...</p>
+                        </div>
+                      ) : (
+                        <div className="prose prose-brand max-w-none prose-sm">
+                          <ReactMarkdown>
+                            {analysis || "Select a product above to analyze its ingredients."}
+                          </ReactMarkdown>
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                </div>
+              </section>
             </motion.div>
-          </div>
-        </section>
+          )}
+        </AnimatePresence>
       </main>
 
       <footer className="bg-brand-charcoal text-brand-cream border-t border-white/5 py-24 px-4 md:px-8">
@@ -563,19 +633,17 @@ export default function App() {
             <div>
               <h4 className="text-[10px] uppercase tracking-[0.3em] font-bold mb-8 text-brand-gold">Concierge</h4>
               <ul className="flex flex-col gap-4 text-sm font-light text-brand-cream/80">
-                <li className="hover:text-brand-gold cursor-pointer">Track Order</li>
-                <li className="hover:text-brand-gold cursor-pointer">Shipping & Returns</li>
-                <li className="hover:text-brand-gold cursor-pointer">Gift Services</li>
-                <li className="hover:text-brand-gold cursor-pointer">Contact Us</li>
+                {['Track Order', 'Shipping & Returns', 'Gift Services', 'Contact Us'].map(link => (
+                  <li key={link} onClick={() => { setActiveInfoPage(link); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="hover:text-brand-gold cursor-pointer transition-colors">{link}</li>
+                ))}
               </ul>
             </div>
             <div>
               <h4 className="text-[10px] uppercase tracking-[0.3em] font-bold mb-8 text-brand-gold">Discover</h4>
               <ul className="flex flex-col gap-4 text-sm font-light text-brand-cream/80">
-                <li className="hover:text-brand-gold cursor-pointer">Our Story</li>
-                <li className="hover:text-brand-gold cursor-pointer">Beauty Blog</li>
-                <li className="hover:text-brand-gold cursor-pointer">Stores</li>
-                <li className="hover:text-brand-gold cursor-pointer">Privacy Policy</li>
+                {['Our Story', 'Beauty Blog', 'Stores', 'Privacy Policy'].map(link => (
+                  <li key={link} onClick={() => { setActiveInfoPage(link); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="hover:text-brand-gold cursor-pointer transition-colors">{link}</li>
+                ))}
               </ul>
             </div>
           </div>
