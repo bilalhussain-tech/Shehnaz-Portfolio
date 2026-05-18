@@ -159,9 +159,9 @@ const ProductCard = ({ product, onAddToCart }: { product: Product; onAddToCart: 
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20 }}
               onClick={() => onAddToCart(product)}
-              className="absolute bottom-4 left-4 right-4 bg-brand-charcoal text-white py-3 uppercase tracking-widest text-[10px] font-bold"
+              className="absolute bottom-4 left-4 right-4 bg-brand-charcoal text-white py-3 uppercase tracking-widest text-[10px] font-bold shadow-2xl"
             >
-              Quick Add — ${product.price}
+              Quick Add — Rs. {product.price.toLocaleString()}
             </motion.button>
           )}
         </AnimatePresence>
@@ -170,7 +170,7 @@ const ProductCard = ({ product, onAddToCart }: { product: Product; onAddToCart: 
         </button>
       </div>
       <div className="mt-4 flex flex-col gap-1 text-center md:text-left">
-        <span className="text-[10px] uppercase tracking-widest text-brand-charcoal/50">{product.brand}</span>
+        <span className="text-[10px] uppercase tracking-widest text-brand-gold font-bold">{product.brand}</span>
         <h3 className="text-base font-medium">{product.name}</h3>
         <div className="flex items-center justify-center md:justify-start gap-1">
           <div className="flex text-brand-gold">
@@ -178,7 +178,7 @@ const ProductCard = ({ product, onAddToCart }: { product: Product; onAddToCart: 
               <Star key={i} size={10} fill={i < Math.floor(product.rating) ? "currentColor" : "none"} />
             ))}
           </div>
-          <span className="text-[10px] text-brand-charcoal/40">({product.reviewsCount})</span>
+          <span className="text-[10px] text-brand-charcoal/40">({product.reviewsCount}) — Rs. {product.price.toLocaleString()}</span>
         </div>
       </div>
     </motion.div>
@@ -239,9 +239,9 @@ const Cart = ({
                         <div>
                           <div className="flex justify-between items-start">
                             <h4 className="text-sm font-medium">{item.name}</h4>
-                            <span className="text-sm">${item.price}</span>
+                            <span className="text-sm">Rs. {item.price.toLocaleString()}</span>
                           </div>
-                          <p className="text-[10px] text-brand-charcoal/50 uppercase mt-1">{item.brand}</p>
+                          <p className="text-[10px] text-brand-gold uppercase mt-1 font-bold">{item.brand}</p>
                         </div>
                         <div className="flex items-center gap-4">
                           <div className="flex border border-brand-charcoal/10 rounded-full px-3 py-1 items-center gap-4">
@@ -261,7 +261,7 @@ const Cart = ({
             <div className="p-8 border-t border-brand-charcoal/10 bg-white/50">
               <div className="flex justify-between items-center mb-6">
                 <span className="uppercase tracking-widest text-sm text-brand-charcoal/60">Subtotal</span>
-                <span className="text-xl font-medium">${total.toFixed(2)}</span>
+                <span className="text-xl font-medium">Rs. {total.toLocaleString()}</span>
               </div>
               <button 
                 disabled={items.length === 0}
@@ -582,8 +582,8 @@ export default function App() {
           <div className="flex flex-col md:flex-row justify-between items-center gap-8 pt-8 border-t border-white/5 text-[10px] uppercase tracking-widest text-brand-cream/40">
             <p>© 2024 Shehnaz Super Store. All Rights Reserved.</p>
             <div className="flex gap-12">
-              <span>English</span>
-              <span>USD</span>
+              <span>Urdu / English</span>
+              <span>PKR</span>
             </div>
           </div>
         </div>
