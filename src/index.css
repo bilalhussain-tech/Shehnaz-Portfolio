@@ -1,22 +1,24 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Tenor+Sans&family=Inter:wght@200;300;400;500;600&display=swap');
 
 @theme {
-  --font-serif: "Cormorant Garamond", serif;
-  --font-sans: "Montserrat", sans-serif;
+  --font-serif: "Tenor Sans", sans-serif;
+  --font-sans: "Inter", sans-serif;
   
-  --color-brand-cream: #f5f2ed;
-  --color-brand-charcoal: #1a1a1a;
-  --color-brand-gold: #c5a059;
+  --color-brand-pearl: #fdfcfb;
+  --color-brand-charcoal: #111111;
+  --color-brand-champagne: #d4bc9e;
+  --color-brand-stone: #f2f0ed;
 }
 
 body {
   font-family: var(--font-sans);
-  background-color: var(--color-brand-cream);
+  background-color: var(--color-brand-pearl);
   color: var(--color-brand-charcoal);
-  @apply antialiased;
+  @apply antialiased selection:bg-brand-charcoal selection:text-white;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-serif);
 }
+
