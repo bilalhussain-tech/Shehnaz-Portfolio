@@ -2,23 +2,25 @@
 @import url('https://fonts.googleapis.com/css2?family=Tenor+Sans&family=Inter:wght@200;300;400;500;600&display=swap');
 
 @theme {
-  --font-serif: "Tenor Sans", sans-serif;
+  --font-serif: "Inter", sans-serif;
   --font-sans: "Inter", sans-serif;
   
-  --color-brand-pearl: #fdfcfb;
-  --color-brand-charcoal: #111111;
-  --color-brand-champagne: #d4bc9e;
-  --color-brand-stone: #f2f0ed;
+  --color-brand-maroon: #630d16;
+  --color-brand-pearl: #ffffff;
+  --color-brand-charcoal: #333333;
+  --color-brand-light: #f5f5f5;
+  --color-brand-gold: #ffc107;
 }
 
 body {
   font-family: var(--font-sans);
-  background-color: var(--color-brand-pearl);
+  background-color: #f0f2f5;
   color: var(--color-brand-charcoal);
-  @apply antialiased selection:bg-brand-charcoal selection:text-white;
+  @apply antialiased selection:bg-brand-maroon selection:text-white;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
+  font-weight: 600;
 }
 
